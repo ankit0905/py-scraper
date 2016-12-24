@@ -11,7 +11,7 @@ class ScriptGenerator():
     def generate(self):
         """ Returns the python script as string.
         """
-        script = r '''
+        script = r"""
 from bs4 import BeautifulSoup
 import requests
 from urlparse import urljoin
@@ -67,5 +67,5 @@ def main():
 
 if __name__=='__main__':
     main()
-                 '''.format(self.url,self.CSSSelector)
+                 """.format(self.url,self.CSSSelector)
         return script.lstrip().rstrip()
