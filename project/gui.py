@@ -2,7 +2,7 @@ import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
-import scriptGenerator
+from scriptGenerator import ScriptGenerator
 import scraper
 
 class MainWindow(QMainWindow):
@@ -10,6 +10,7 @@ class MainWindow(QMainWindow):
     """
     def __init__(self, parent=None):
         super(MainWindow,self).__init__(parent)
+
         self.menubar = self.menuBar()
         file_ = self.menubar.addMenu("File")
         edit = self.menubar.addMenu("Edit")
@@ -21,20 +22,20 @@ class MainWindow(QMainWindow):
         mainlayout = QVBoxLayout()
         grid = QGridLayout()
 
-        urlLabel = QLabel("URL:")
-        selectorLabel = QLabel("Selector:")
-        urlInput = QLineEdit()
-        selectorInput = QLineEdit()
-        button = QPushButton()
-        button.setText("Scrape It")
-        button.setFixedWidth(100)
-        button.clicked.connect(self.modifyUI)
+        self.urlLabel = QLabel("URL:")
+        self.urlInput = QLineEdit()
+        self.selectorLabel = QLabel("Selector:")
+        self.selectorInput = QLineEdit()
+        self.button = QPushButton()
+        self.button.setText("Scrape It")
+        self.button.setFixedWidth(100)
+        self.button.clicked.connect(self.modifyUI)
 
-        grid.addWidget(urlLabel,0,0)
-        grid.addWidget(urlInput,0,1)
-        grid.addWidget(selectorLabel,1,0)
-        grid.addWidget(selectorInput,1,1)
-        grid.addWidget(button,2,1)
+        grid.addWidget(self.urlLabel,0,0)
+        grid.addWidget(self.urlInput,0,1)
+        grid.addWidget(self.selectorLabel,1,0)
+        grid.addWidget(self.selectorInput,1,1)
+        grid.addWidget(self.button,2,1)
 
         mainlayout.addLayout(grid)
 
@@ -47,22 +48,22 @@ class MainWindow(QMainWindow):
         self.tab.addTab(self.tab3,"3")
 
         tab1layout = QVBoxLayout()
-        scriptBrowser = QTextBrowser()
-        scriptBrowser.append("")
-        tab1layout.addWidget(scriptBrowser)
+        self.scriptBrowser = QTextBrowser()
+        self.scriptBrowser.append("")
+        tab1layout.addWidget(self.scriptBrowser)
         self.tab.setTabText(0,"Python Script")
         self.tab1.setLayout(tab1layout)
 
         tab2layout = QVBoxLayout()
-        web = QWebView()
-        tab2layout.addWidget(web)
+        self.web = QWebView()
+        tab2layout.addWidget(self.web)
         self.tab.setTabText(1,"Webpage")
         self.tab2.setLayout(tab2layout)
 
         tab3layout = QVBoxLayout()
-        dataBrowser = QTextBrowser()
-        dataBrowser.append("Scraped Data: \n\n")
-        tab3layout.addWidget(dataBrowser)
+        self.dataBrowser = QTextBrowser()
+        self.dataBrowser.append("Scraped Data: \n\n")
+        tab3layout.addWidget(self.dataBrowser)
         self.tab.setTabText(2,"Scraped Data")
         self.tab3.setLayout(tab3layout)
 
@@ -71,18 +72,33 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.dialog)
 
     def modifyUI(self):
-        """ Method to modify UIs for the the tabs after scraping.
+        """ Method to modify UIs for the tabs after scraping.
         """
         message = QMessageBox();
         message.setIcon(QMessageBox.Information)
         message.setText("Scraping under progress...")
         message.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
         message.exec_()
+        url = self.urlInput.text()
+        selectors = self.selectorInput.text()
+        sc = scraper.Scraper(str(url),str(selectors))
+        scr = ScriptGenerator(url,selectors).generate()
+        self.web.load(QUrl(url))
+        print "Webpage Loaded \n"
+        sc.parse()
+        print "Scrapping done"
+        self.dataBrowser.append(str(sc.data))
+        self.scriptBrowser.append(str(scr))
+        return
 
-app = QApplication(sys.argv)
-window = MainWindow()
-window.show()
-app.exec_()
+def main():
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec_()
+
+if __name__ == '__main__':
+    main()
 
 # modifyUI() method to be changed for cheking input and displaying required info
 # Layouts may be made better
