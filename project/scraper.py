@@ -20,7 +20,12 @@ class Scraper:
             Website content is requested, BeautifulSoup object is created and then
             scrape() function is called for required scraping.
         """
-        r = requests.get(self.url,timeout=3)
+        try:
+            r = requests.get(self.url,timeout=5)
+        except:
+            self.data = "Connection Refused - Could not Scrape"
+            print "Connection Refused"
+            return
         page = BeautifulSoup(r.content, "html.parser")
         self.modify()
         self.scrape(self.url,page,0,len(self.CSSSelectors)-1,self.CSSSelectors)
@@ -53,7 +58,12 @@ class Scraper:
                 href = ele.get('href')
                 print href
                 new_url = urlparse.urljoin(url,href)
-                req = requests.get(new_url,timeout=3)
+                try:
+                    req = requests.get(new_url,timeout=5)
+                except:
+                    self.data = "Connection Refused - Could not Scrape"
+                    print "Connection Refused"
+                    return
                 new_soup = BeautifulSoup(req.content,"html.parser")
                 self.scrape(new_url,new_soup,index+1,hi,selectors)
         else:
@@ -79,3 +89,7 @@ class Scraper:
 #scraper = Scraper(link,inp)
 #scraper.parse()
 #print scraper.data
+
+#ISSUES
+#Gui sometimes goes to non-responding mode while scraping is done
+#Can be solved by introducing threads
