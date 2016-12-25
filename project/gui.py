@@ -7,6 +7,11 @@ import scraper, syntax
 
 class MainWindow(QMainWindow):
     """ The class that defines the structure of the application's GUI.
+
+        The main GUI contains URL Input box, Selector Input box and following 3 tabs:
+        1.) Script Tab : Python Script is generated here for required scraping
+        2.) Webpage Tab : Displays the website of input URL
+        3.) Data Tab : Displays the Scraped Data using Input URL & Selector
     """
     def __init__(self, parent=None):
         super(MainWindow,self).__init__(parent)
@@ -79,6 +84,11 @@ class MainWindow(QMainWindow):
 
     def modifyUI(self):
         """ Method to modify UIs for the tabs after scraping.
+
+            First, the required web page is loaded on the webpage tab.
+            Second, the python script is generated and stored in script member variable
+            Third, scraper instance is created and scraping starts on a separate thread.
+            As soon as scraping finishes, the method addScriptAndData() is called.
         """
         url = self.urlInput.text()
         selectors = self.selectorInput.text()
@@ -86,14 +96,19 @@ class MainWindow(QMainWindow):
         print "Webpage Loaded \n"
 
         self.script = ScriptGenerator(url,selectors).generate()
-        self.highlight = syntax.PythonHighlighter(self.scriptBrowser.document())
-        self.scriptBrowser.setText(self.script)
 
         self.scraper_ = scraper.Scraper(str(url),str(selectors))
-        self.scraper_.parse()
-        print "Scrapping done"
+        self.connect(self.scraper_,SIGNAL('threadChange'),self.addScriptAndData)
+        self.scraper_.start()
+
+    def addScriptAndData(self):
+        """ Method which adds the script and scraped data to respective tabs.
+
+            Syntax highlighter instance is created and functionality added to script Tab.
+        """
         self.dataBrowser.setText("Scraped data: \n\n"+str(self.scraper_.data))
-        return
+        self.highlight = syntax.PythonHighlighter(self.scriptBrowser.document())
+        self.scriptBrowser.setText(self.script)
 
 def main():
     app = QApplication(sys.argv)

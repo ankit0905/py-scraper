@@ -1,25 +1,31 @@
 import requests
 from bs4 import BeautifulSoup
 import urlparse
+from PyQt4 import QtCore
 
-class Scraper:
+class Scraper(QtCore.QThread):
     """ Class for scraping webpages
 
         url       : starting link for scraping
         selectors : user input of selectors
         data      : string that stores the scraped data
+
+        It inherits from the class QThread to facilitate multithreading
     """
     def __init__(self,link,selectors):
+        QtCore.QThread.__init__(self)
         self.url = link
         self.CSSSelectors = selectors
-        self.data = ""
 
-    def parse(self):
-        """ Parses the Website url.
+    def run(self):
+        """ Overrides the run() method of QThread Class.
 
+            It parses the website URL.
             Website content is requested, BeautifulSoup object is created and then
             scrape() function is called for required scraping.
+            Emits a SIGNAL threadChange to notify exiting of thread.
         """
+        self.data = ""
         try:
             r = requests.get(self.url,timeout=5)
         except:
@@ -29,6 +35,8 @@ class Scraper:
         page = BeautifulSoup(r.content, "html.parser")
         self.modify()
         self.scrape(self.url,page,0,len(self.CSSSelectors)-1,self.CSSSelectors)
+        self.emit(QtCore.SIGNAL("threadChange"))
+        print "Scrapping done"
 
     def modify(self):
         """ Modifies the string selector and converts it into list of selectors
@@ -83,13 +91,7 @@ class Scraper:
                 for it in range(len(new_soup)):
                     self.scrape(url,new_soup[it],index+1,hi,selectors)
 
-#TEST CASE (success)
+#Testing done on following
 #inp = "a.organization-card__link -> (h3.banner__title,li.organization__tag--technology)"
 #link = "https://summerofcode.withgoogle.com/archive/2016/organizations/"
-#scraper = Scraper(link,inp)
-#scraper.parse()
-#print scraper.data
-
-#ISSUES
-#Gui sometimes goes to non-responding mode while scraping is done
-#Can be solved by introducing threads
+#SUCCESS
