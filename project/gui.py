@@ -3,7 +3,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PyQt4.QtWebKit import *
 from scriptGenerator import ScriptGenerator
-import scraper
+import scraper, syntax
 
 class MainWindow(QMainWindow):
     """ The class that defines the structure of the application's GUI.
@@ -50,6 +50,9 @@ class MainWindow(QMainWindow):
         tab1layout = QVBoxLayout()
         self.scriptBrowser = QTextBrowser()
         self.scriptBrowser.append("")
+        self.scriptBrowser.setTextColor(QColor("#C5C8C6"))
+        self.scriptBrowser.setStyleSheet("background-color: #1d1f21")
+        self.scriptBrowser.setText("Python Script will be generated here")
         tab1layout.addWidget(self.scriptBrowser)
         self.tab.setTabText(0,"Python Script")
         self.tab1.setLayout(tab1layout)
@@ -63,6 +66,9 @@ class MainWindow(QMainWindow):
         tab3layout = QVBoxLayout()
         self.dataBrowser = QTextBrowser()
         self.dataBrowser.append("Scraped Data: \n\n")
+        self.dataBrowser.setStyleSheet("background-color: #1d1f21")
+        self.dataBrowser.setFontWeight(QFont.Bold)
+        self.dataBrowser.setTextColor(QColor("#C5C8C6"))
         tab3layout.addWidget(self.dataBrowser)
         self.tab.setTabText(2,"Scraped Data")
         self.tab3.setLayout(tab3layout)
@@ -74,21 +80,19 @@ class MainWindow(QMainWindow):
     def modifyUI(self):
         """ Method to modify UIs for the tabs after scraping.
         """
-        message = QMessageBox();
-        message.setIcon(QMessageBox.Information)
-        message.setText("Scraping under progress...")
-        message.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        message.exec_()
         url = self.urlInput.text()
         selectors = self.selectorInput.text()
-        sc = scraper.Scraper(str(url),str(selectors))
-        scr = ScriptGenerator(url,selectors).generate()
         self.web.load(QUrl(url))
         print "Webpage Loaded \n"
-        sc.parse()
+
+        self.script = ScriptGenerator(url,selectors).generate()
+        self.highlight = syntax.PythonHighlighter(self.scriptBrowser.document())
+        self.scriptBrowser.setText(self.script)
+
+        self.scraper_ = scraper.Scraper(str(url),str(selectors))
+        self.scraper_.parse()
         print "Scrapping done"
-        self.dataBrowser.append(str(sc.data))
-        self.scriptBrowser.append(str(scr))
+        self.dataBrowser.setText("Scraped data: \n\n"+str(self.scraper_.data))
         return
 
 def main():
@@ -100,7 +104,6 @@ def main():
 if __name__ == '__main__':
     main()
 
-# modifyUI() method to be changed for cheking input and displaying required info
-# Layouts may be made better
+# code to be added to take care of multithreading
 # Menu bar will be modified
 # About section to be included
