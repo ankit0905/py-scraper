@@ -23,7 +23,11 @@ def modify(selector):
     return selector
 
 def parse(url, selectors):
-    r = requests.get(url)
+    try:
+        r = requests.get(url)
+    except:
+        print "Connection failed"
+        return
     page = BeautifulSoup(r.content,"html.parser")
     scrape(url,page,0,len(selectors)-1,selectors)
 
@@ -38,7 +42,11 @@ def scrape(url, soup, index, hi, selectors):
         for ele in elements:
             href = ele.get("href")
             new_url = urljoin(url,href)
-            req = requests.get(new_url)
+            try:
+                req = requests.get(new_url)
+            except:
+                print "Connection failed"
+                return
             new_soup = BeautifulSoup(req.content,"html.parser")
             scrape(new_url,new_soup,index+1,hi,selectors)
     else:
