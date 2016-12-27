@@ -64,7 +64,6 @@ class Scraper(QtCore.QThread):
             elements = soup.select(selectors[index])
             for ele in elements:
                 href = ele.get('href')
-                print href
                 new_url = urlparse.urljoin(url,href)
                 try:
                     req = requests.get(new_url,timeout=5)
