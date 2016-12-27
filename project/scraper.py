@@ -60,7 +60,7 @@ class Scraper(QtCore.QThread):
             text = str(text.encode('utf-8'))
             self.data += text.lstrip().rstrip()+'\n'
             return
-        elif index != hi and selectors[index].startswith('a.'):
+        elif index != hi and (selectors[index].startswith('a.') or selectors[index] == 'a'):
             elements = soup.select(selectors[index])
             for ele in elements:
                 href = ele.get('href')

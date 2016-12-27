@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -178,7 +179,9 @@ class MainWindow(QMainWindow):
 
             Syntax highlighter instance is created and functionality added to script Tab.
         """
-        self.dataBrowser.setText("Scraped data: \n\n"+str(self.scraper_.data))
+        reload(sys)
+        sys.setdefaultencoding('utf8')
+        self.dataBrowser.setText(self.scraper_.data.encode('utf-8').decode('utf-8'))
         self.highlight = syntax.PythonHighlighter(self.scriptBrowser.document())
         self.scriptBrowser.setText(self.script)
 
