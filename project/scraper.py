@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-import urlparse
-from PyQt4 import QtCore
+from urllib.parse import urljoin
+from PyQt5 import QtCore
 
 class Scraper(QtCore.QThread):
     """ Class for scraping webpages
@@ -12,6 +12,7 @@ class Scraper(QtCore.QThread):
 
         It inherits from the class QThread to facilitate multithreading
     """
+    threadChange = QtCore.pyqtSignal(str)
     def __init__(self,link,selectors):
         QtCore.QThread.__init__(self)
         self.url = link
@@ -30,13 +31,13 @@ class Scraper(QtCore.QThread):
             r = requests.get(self.url,timeout=5)
         except:
             self.data = "Connection Refused - Could not Scrape"
-            print "Connection Refused"
+            print("Connection Refused")
             return
         page = BeautifulSoup(r.content, "html.parser")
         self.modify()
         self.scrape(self.url,page,0,len(self.CSSSelectors)-1,self.CSSSelectors)
-        self.emit(QtCore.SIGNAL("threadChange"))
-        print "Scrapping done"
+        self.threadChange.emit("threadChange")
+        print("Scrapping done")
 
     def modify(self):
         """ Modifies the string selector and converts it into list of selectors
@@ -57,19 +58,19 @@ class Scraper(QtCore.QThread):
         """
         if index > hi:
             text = soup.get_text()
-            text = str(text.encode('utf-8'))
+            text = str(text.encode('utf-8').decode('utf-8'))
             self.data += text.lstrip().rstrip()+'\n'
             return
         elif index != hi and (selectors[index].startswith('a.') or selectors[index] == 'a'):
             elements = soup.select(selectors[index])
             for ele in elements:
                 href = ele.get('href')
-                new_url = urlparse.urljoin(url,href)
+                new_url = urljoin(url,href)
                 try:
                     req = requests.get(new_url,timeout=5)
                 except:
                     self.data = "Connection Refused - Could not Scrape"
-                    print "Connection Refused"
+                    print("Connection Refused")
                     return
                 new_soup = BeautifulSoup(req.content,"html.parser")
                 self.scrape(new_url,new_soup,index+1,hi,selectors)

@@ -1,9 +1,9 @@
-# script credits: https://wiki.python.org/moin/PyQt/Python%20syntax%20highlighting
+# script taken from https://wiki.python.org/moin/PyQt/Python%20syntax%20highlighting
 
 import sys
 
-from PyQt4.QtCore import QRegExp
-from PyQt4.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
+from PyQt5.QtCore import QRegExp
+from PyQt5.QtGui import QColor, QTextCharFormat, QFont, QSyntaxHighlighter
 
 def format(color, style=''):
     """Return a QTextCharFormat with the given attributes.
@@ -123,7 +123,7 @@ class PythonHighlighter (QSyntaxHighlighter):
             while index >= 0:
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
-                length = expression.cap(nth).length()
+                length = len(expression.cap(nth))
                 self.setFormat(index, length, format)
                 index = expression.indexIn(text, index + length)
 
@@ -163,7 +163,7 @@ class PythonHighlighter (QSyntaxHighlighter):
             # No; multi-line string
             else:
                 self.setCurrentBlockState(in_state)
-                length = text.length() - start + add
+                length = len(text) - start + add
             # Apply formatting
             self.setFormat(start, length, style)
             # Look for the next match

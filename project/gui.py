@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import sys
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtWebKit import QWebView
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWebEngineWidgets import *
+from PyQt5.QtWidgets import *
 from scriptGenerator import ScriptGenerator
 import scraper, syntax
 
@@ -89,7 +90,7 @@ class MainWindow(QMainWindow):
         self.tab1.setLayout(tab1layout)
 
         tab2layout = QVBoxLayout()
-        self.web = QWebView()
+        self.web = QWebEngineView()
         tab2layout.addWidget(self.web)
         self.tab.setTabText(1,"Webpage")
         self.tab2.setLayout(tab2layout)
@@ -116,7 +117,7 @@ class MainWindow(QMainWindow):
         """
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
-        msg.setText("Py-Scrapper is a GUI tool for scraping data off webpages"+"\nDeveloped Using Python 2.7 and PyQt4.\n")
+        msg.setText("Py-Scrapper is a GUI tool for scraping data off webpages"+"\nDeveloped Using Python 3.5.2 and PyQt5.\n")
         info = "Visit the <a href=\"https://github.com/ankit0905/py-scraper\">Source code</a>"
         msg.setInformativeText(info)
         msg.setWindowTitle("About")
@@ -154,7 +155,6 @@ class MainWindow(QMainWindow):
         details.setWindowTitle("Usage")
         details.exec_()
 
-
     def modifyUI(self):
         """ Method to modify UIs for the tabs after scraping.
 
@@ -166,12 +166,12 @@ class MainWindow(QMainWindow):
         url = self.urlInput.text()
         selectors = self.selectorInput.text()
         self.web.load(QUrl(url))
-        print "Webpage Loaded \n"
+        print("Webpage Loaded \n")
 
         self.script = ScriptGenerator(url,selectors).generate()
 
         self.scraper_ = scraper.Scraper(str(url),str(selectors))
-        self.connect(self.scraper_,SIGNAL('threadChange'),self.addScriptAndData)
+        self.scraper_.threadChange.connect(self.addScriptAndData)
         self.scraper_.start()
 
     def addScriptAndData(self):
@@ -179,8 +179,6 @@ class MainWindow(QMainWindow):
 
             Syntax highlighter instance is created and functionality added to script Tab.
         """
-        reload(sys)
-        sys.setdefaultencoding('utf8')
         self.dataBrowser.setText(self.scraper_.data.encode('utf-8').decode('utf-8'))
         self.highlight = syntax.PythonHighlighter(self.scriptBrowser.document())
         self.scriptBrowser.setText(self.script)
@@ -193,6 +191,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-# Minor Issue
-# display of warning - QFont::setPixelSize: Pixel size <= 0 (0) while application is working

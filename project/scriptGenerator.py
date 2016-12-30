@@ -1,4 +1,4 @@
-class ScriptGenerator():
+class ScriptGenerator:
     """ Generate python script to scrape given selector.
 
         url      : link of the webpage to be scraped
