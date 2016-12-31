@@ -17,7 +17,7 @@ Then, install PyQt5 using the following (Might take some time):
 Finally, install the other dependencies from **requirements.txt** using the following:  
 ```
    $ cd /path to folder py-scrapper/project
-   $ sudo pip install -r requirements.txt
+   $ sudo pip3 install -r requirements.txt
 ```
 
 ## Usage
@@ -50,13 +50,15 @@ The selector must be a valid CSS Selector. For recursive scraping, use the hiera
 
 **Example**  
 
-To scrape the text of the paragraphs with class *'title'* and *'description'* for all the items of each
-subcategory and category classed links starting with the url given as input, the selector will look something
-like as given below:
++ To scrape the text of the paragraphs with class *'title'* and *'description'* for all the items of each subcategory and category classed links starting with the url given as input, the selector will look something like as given below:
 
        a.category -> a.subcategory -> div.item -> (p.title, p.description)
 
-You can also refer to the screenshot above for another example.  
++ You can also refer to the screenshot above for another example along with the results of scraping.  
++ You can also use another way of using nested CSS Selectors by using **">"**. For example, if you want to scrape the text of a span tag with class *"text"* inside a div with class *"details"*. 
+
+      div.details > span.text
+
 
 **NOTE:**  
 
