@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import sys
 from PyQt5.QtCore import *
@@ -21,17 +22,20 @@ class MainWindow(QMainWindow):
         self.menubar = self.menuBar()
         help_ = self.menubar.addMenu("Help")
         aboutAction = QAction("About",self)
-        aboutAction.setShortcut("Ctrl+A")
+        self.shortcut = QShortcut(QKeySequence("Alt+A"),self)
+        self.shortcut.activated.connect(self.about)
         aboutAction.setToolTip("About Py-Scrapper")
         aboutAction.triggered.connect(self.about)
 
         contributeAction = QAction("Contribute Or Report Issues",self)
-        contributeAction.setShortcut("Ctrl+Shift+C")
+        self.shortcut = QShortcut(QKeySequence("Alt+C"),self)
+        self.shortcut.activated.connect(self.contribute)
         contributeAction.setToolTip("Opens Repository")
         contributeAction.triggered.connect(self.contribute)
 
         usageAction = QAction("Usage",self)
-        usageAction.setShortcut("Ctrl+U")
+        self.shortcut = QShortcut(QKeySequence("Alt+U"),self)
+        self.shortcut.activated.connect(self.usage)
         usageAction.setToolTip("Instructions for Using the tool")
         usageAction.triggered.connect(self.usage)
 
@@ -117,7 +121,7 @@ class MainWindow(QMainWindow):
         """
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
-        msg.setText("Py-Scrapper is a GUI tool for scraping data off webpages"+"\nDeveloped Using Python 3.5.2 and PyQt5.\n")
+        msg.setText("Py-Scrapper is a GUI tool for scraping data off webpages recursively."+"\n\nDeveloped Using Python 3.5.2 and PyQt5.\n")
         info = "Visit the <a href=\"https://github.com/ankit0905/py-scraper\">Source code</a>"
         msg.setInformativeText(info)
         msg.setWindowTitle("About")
@@ -145,9 +149,22 @@ class MainWindow(QMainWindow):
         <ul><li>&nbsp;&nbsp;Use the '->' symbol to separate different elements.<li>
         <li>&nbsp;&nbsp;Wheneven you want some to scrape sibling elements - write them in '()' separating by comma.</li></ul></p>
         <br/></br>
-        <p><b><u>EXAMPLE:</u></b></p>
+        <p><b><u>EXAMPLES:</u></b></p>
+        <ol>
+        <li>
         <p><i>a.category -> a.subcategory -> div.item -> (p.title, p.description)</i></p>
         <p>This will scrape the text of the paragraphs will class 'title' and 'description' for all the items of each subcategory and category classed links starting with the url given as input.</p>
+        </li>
+        <li>
+        <p>You can also use another way of using nested CSS Selectors by using ">". </p>
+        <p>For example, if you want to scrape the text of a span tag with class "text" inside a div with class "details", use something like:</p>
+        <p><i>div.details > span.text</i></p>
+        </li>
+        <li>
+        <p><i>a.organization-card__link -> (h3.banner__title, li.organization__tag--technology)</i></p>
+        <p>The above selector was used to scrape the used technologies of all the GSOC organization recursively from <a href="https://summerofcode.withgoogle.com/archive/2016/organizations/">here</a>.</p>
+        </li>
+        </ol>
         """
         details = QMessageBox()
         details.setText(text)
