@@ -12,9 +12,10 @@ class ScriptGenerator:
         """ Returns the python script as string.
         """
         script = r"""
+# -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
 import requests
-from urlparse import urljoin
+from urllib.parse import urljoin
 
 def modify(selector):
     selector = selector.split('->')
@@ -26,7 +27,7 @@ def parse(url, selectors):
     try:
         r = requests.get(url)
     except:
-        print "Connection failed"
+        print("Connection failed")
         return
     page = BeautifulSoup(r.content,"html.parser")
     scrape(url,page,0,len(selectors)-1,selectors)
@@ -34,8 +35,8 @@ def parse(url, selectors):
 def scrape(url, soup, index, hi, selectors):
     if index > hi:
         text = soup.get_text()
-        text = str(text.encode("utf-8"))
-        print text.lstrip().rstrip()
+        text = str(text.encode("utf-8").decode("utf-8"))
+        print(text.lstrip().rstrip())
         return
     elif index != hi and selectors[index].startswith("a."):
         elements = soup.select(selectors[index])
@@ -45,7 +46,7 @@ def scrape(url, soup, index, hi, selectors):
             try:
                 req = requests.get(new_url)
             except:
-                print "Connection failed"
+                print("Connection failed")
                 return
             new_soup = BeautifulSoup(req.content,"html.parser")
             scrape(new_url,new_soup,index+1,hi,selectors)
@@ -60,7 +61,7 @@ def scrape(url, soup, index, hi, selectors):
                 new_soup = soup.select(selector)
                 for it in range(len(new_soup)):
                     scrape(url,new_soup[it],index+1,hi,selectors)
-            print "\n"
+            print("\n\n")
         else:
             new_soup = soup.select(selectors[index])
             for it in range(len(new_soup)):
