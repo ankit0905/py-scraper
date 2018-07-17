@@ -36,11 +36,11 @@ depending on your scraping requirements. *(Check out the preview in the preview 
 
 ## Previews  
 
-[![scraper1.png](https://s25.postimg.org/8vxwds5tb/scraper1.png)](https://postimg.org/image/kl1w1qwrv/)
+[![scraper1.png](https://s25.postimg.cc/8vxwds5tb/scraper1.png)](https://postimg.cc/image/kl1w1qwrv/)
 
-[![scraper-web.png](https://s25.postimg.org/4pd1yg67j/scraper_web.png)](https://postimg.org/image/m2ncdb1ij/)
+[![scraper-web.png](https://s25.postimg.cc/4pd1yg67j/scraper-web.png)](https://postimg.cc/image/m2ncdb1ij/)
 
-[![scraperdata.png](https://s25.postimg.org/87p1uu73j/scraperdata.png)](https://postimg.org/image/j7a96fxij/)
+[![scraperdata.png](https://s25.postimg.cc/87p1uu73j/scraperdata.png)](https://postimg.cc/image/j7a96fxij/)
 
 ## Using Selectors
 The selector must be a valid CSS Selector. For recursive scraping, use the hierarchical way:  
